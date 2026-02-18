@@ -837,7 +837,7 @@ theorem nonneg_antisymm : ∀ {a : ℤ√d}, Nonneg a → Nonneg (-a) → a = 0
     rw [one_mul] at t
     exact absurd t (not_divides_sq _ _)
 
-theorem le_antisymm {a b : ℤ√d} (ab : a ≤ b) (ba : b ≤ a) : a = b :=
+protected theorem le_antisymm {a b : ℤ√d} (ab : a ≤ b) (ba : b ≤ a) : a = b :=
   eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
 
 instance linearOrder : LinearOrder (ℤ√d) :=
