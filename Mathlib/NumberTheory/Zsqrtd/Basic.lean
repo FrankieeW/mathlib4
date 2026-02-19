@@ -674,16 +674,19 @@ protected theorem nonneg_total : ∀ a : ℤ√d, Nonneg a ∨ Nonneg (-a)
   | ⟨(_ + 1 : ℕ), -[_+1]⟩ => Nat.le_total _ _
   | ⟨-[_+1], (_ + 1 : ℕ)⟩ => Nat.le_total _ _
 
+private theorem le_total_aux (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
+  have := (b - a).nonneg_total
+  rwa [neg_sub] at this
+
 instance preorder : Preorder (ℤ√d) where
   le_refl a := show Nonneg (a - a) by simp only [sub_self]; trivial
   le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using hab.add hbc
   lt_iff_le_not_ge a b := by
-    have ht : b ≤ a ∨ a ≤ b := by
-      have := (a - b).nonneg_total; rwa [neg_sub] at this
+    have ht : b ≤ a ∨ a ≤ b := by simpa [or_comm] using le_total_aux a b
     exact (and_iff_right_of_imp ht.resolve_left).symm
 
 open Int in
-theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
+private theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
     match -a with
     | ⟨Int.ofNat x, Int.ofNat y⟩ => ⟨0, 0, by trivial⟩
@@ -872,7 +875,7 @@ instance : IsDomain (ℤ√d) :=
 protected theorem mul_pos (a b : ℤ√d) (a0 : 0 < a) (b0 : 0 < b) : 0 < a * b := fun ab =>
   Or.elim
     (eq_zero_or_eq_zero_of_mul_eq_zero
-      (le_antisymm ab (Zsqrtd.mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))
+      (_root_.le_antisymm ab (Zsqrtd.mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))
     (fun e => ne_of_gt a0 e) fun e => ne_of_gt b0 e
 
 instance : ZeroLEOneClass (ℤ√d) :=
@@ -883,6 +886,26 @@ instance : IsOrderedAddMonoid (ℤ√d) :=
 
 instance : IsStrictOrderedRing (ℤ√d) :=
   .of_mul_pos Zsqrtd.mul_pos
+
+@[deprecated _root_.le_total (since := "2026-02-19")]
+protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a :=
+  _root_.le_total _ _
+
+@[deprecated _root_.add_le_add_left (since := "2026-02-19")]
+protected theorem add_le_add_left {a b : ℤ√d} (hab : a ≤ b) (c : ℤ√d) : c + a ≤ c + b :=
+  by simpa [add_comm, add_left_comm, add_assoc] using _root_.add_le_add_left hab c
+
+@[deprecated _root_.add_le_add_iff_left (since := "2026-02-19")]
+protected theorem le_of_add_le_add_left {a b c : ℤ√d} (h : c + a ≤ c + b) : a ≤ b :=
+  (_root_.add_le_add_iff_left c).1 h
+
+@[deprecated _root_.add_lt_add_left (since := "2026-02-19")]
+protected theorem add_lt_add_left {a b : ℤ√d} (hab : a < b) (c : ℤ√d) : c + a < c + b :=
+  by simpa [add_comm, add_left_comm, add_assoc] using _root_.add_lt_add_left hab c
+
+@[deprecated _root_.le_antisymm (since := "2026-02-19")]
+theorem le_antisymm {a b : ℤ√d} (hab : a ≤ b) (hba : b ≤ a) : a = b :=
+  _root_.le_antisymm hab hba
 
 end
 
