@@ -689,7 +689,9 @@ instance preorder : Preorder (ℤ√d) where
     exact (and_iff_right_of_imp ht.resolve_left).symm
 
 open Int in
-@[deprecated "Use `exists_nat_ge` where available." (since := "2026-02-19")]
+-- TODO(2026-02-19): keep `le_arch` temporarily for compatibility with
+-- `Mathlib/NumberTheory/PellMatiyasevic.lean`; migrate callers to `exists_nat_ge`
+-- where available, then deprecate/remove this theorem.
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
     match -a with
@@ -707,20 +709,11 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   rw [show (x : ℤ) + d * Nat.succ y - x = d * Nat.succ y by simp]
   exact h (y + 1)
 
-@[deprecated _root_.add_le_add_right (since := "2026-02-19")]
+@[deprecated _root_.add_le_add_left (since := "2026-02-19")]
 protected theorem add_le_add_left (a b : ℤ√d) (ab : a ≤ b) (c : ℤ√d) : a + c ≤ b + c :=
   show Nonneg _ by rwa [add_sub_add_right_eq_sub]
 
-@[deprecated _root_.le_of_add_le_add_left (since := "2026-02-19")]
-protected theorem le_of_add_le_add_left (a b c : ℤ√d) (h : c + a ≤ c + b) : a ≤ b := by
-  have h' : Nonneg ((c + b) - (c + a)) := h
-  simpa [add_sub_add_left_eq_sub] using h'
 
-@[deprecated _root_.add_lt_add_left (since := "2026-02-19")]
-protected theorem add_lt_add_left (a b : ℤ√d) (h : a < b) (c) : c + a < c + b := fun h' =>
-  h (by
-    have h'' : Nonneg ((c + a) - (c + b)) := h'
-    simpa [add_sub_add_left_eq_sub] using h'')
 
 theorem nonneg_smul {a : ℤ√d} {n : ℕ} (ha : Nonneg a) : Nonneg ((n : ℤ√d) * a) := by
   rw [← Int.cast_natCast n]
@@ -850,7 +843,7 @@ theorem nonneg_antisymm : ∀ {a : ℤ√d}, Nonneg a → Nonneg (-a) → a = 0
     exact absurd t (not_divides_sq _ _)
 
 @[deprecated _root_.le_antisymm (since := "2026-02-19")]
-protected theorem le_antisymm {a b : ℤ√d} (ab : a ≤ b) (ba : b ≤ a) : a = b :=
+theorem le_antisymm {a b : ℤ√d} (ab : a ≤ b) (ba : b ≤ a) : a = b :=
   eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
 
 instance linearOrder : LinearOrder (ℤ√d) :=
@@ -900,7 +893,7 @@ instance : IsDomain (ℤ√d) :=
 protected theorem mul_pos (a b : ℤ√d) (a0 : 0 < a) (b0 : 0 < b) : 0 < a * b := fun ab =>
   Or.elim
     (eq_zero_or_eq_zero_of_mul_eq_zero
-      (le_antisymm ab (Zsqrtd.mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))
+      (_root_.le_antisymm ab (Zsqrtd.mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))
     (fun e => ne_of_gt a0 e) fun e => ne_of_gt b0 e
 
 instance : ZeroLEOneClass (ℤ√d) :=
@@ -908,6 +901,13 @@ instance : ZeroLEOneClass (ℤ√d) :=
 
 instance : IsOrderedAddMonoid (ℤ√d) :=
   { add_le_add_left := fun a b ab c => show Nonneg _ by rwa [add_sub_add_right_eq_sub] }
+
+protected theorem le_of_add_le_add_left (a b c : ℤ√d) (h : c + a ≤ c + b) : a ≤ b := by
+  exact _root_.le_of_add_le_add_left h
+
+
+protected theorem add_lt_add_left (a b : ℤ√d) (h : a < b) (c) : c + a < c + b := fun h' =>
+  h (Zsqrtd.le_of_add_le_add_left _ _ _ h')
 
 instance : IsStrictOrderedRing (ℤ√d) :=
   .of_mul_pos Zsqrtd.mul_pos
