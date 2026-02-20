@@ -689,9 +689,9 @@ instance preorder : Preorder (ℤ√d) where
     exact (and_iff_right_of_imp ht.resolve_left).symm
 
 open Int in
--- TODO(2026-02-19): keep `le_arch` temporarily for compatibility with
--- `Mathlib/NumberTheory/PellMatiyasevic.lean`; migrate callers to `exists_nat_ge`
--- where available, then deprecate/remove this theorem.
+-- TODO(2026-02-19): there is currently no `Archimedean (ℤ√d)` instance.
+-- Keep `le_arch` for compatibility with `Mathlib/NumberTheory/PellMatiyasevic.lean`;
+-- once that instance is available, migrate callers to `exists_nat_ge` and remove this theorem.
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
     match -a with
@@ -902,12 +902,13 @@ instance : ZeroLEOneClass (ℤ√d) :=
 instance : IsOrderedAddMonoid (ℤ√d) :=
   { add_le_add_left := fun a b ab c => show Nonneg _ by rwa [add_sub_add_right_eq_sub] }
 
+@[deprecated _root_.le_of_add_le_add_left (since := "2026-02-19")]
 protected theorem le_of_add_le_add_left (a b c : ℤ√d) (h : c + a ≤ c + b) : a ≤ b := by
   exact _root_.le_of_add_le_add_left h
 
-
+@[deprecated _root_.add_lt_add_left (since := "2026-02-19")]
 protected theorem add_lt_add_left (a b : ℤ√d) (h : a < b) (c) : c + a < c + b := fun h' =>
-  h (Zsqrtd.le_of_add_le_add_left _ _ _ h')
+  h (_root_.le_of_add_le_add_left h')
 
 instance : IsStrictOrderedRing (ℤ√d) :=
   .of_mul_pos Zsqrtd.mul_pos
