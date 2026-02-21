@@ -88,13 +88,12 @@ private lemma toReal_nonneg_nat {a : ℤ√d} (ha : 0 ≤ a) :
     have hsq : SqLe y d x 1 := (nonnegg_pos_neg (c := d) (d := 1) (a := x) (b := y)).1 hnonnegg
     have hxy' : (y : ℝ) * Real.sqrt d ≤ x := sqLe_y_sqrt_le_x hsq
     have : 0 ≤ (x : ℝ) - (y : ℝ) * Real.sqrt d := sub_nonneg.mpr hxy'
-    simpa [toReal, sub_eq_add_neg, mul_assoc, mul_left_comm, mul_comm] using this
+    simpa using this
   · have hnonnegg : Nonnegg d 1 (-x) y := by simpa [Nonneg] using ha'
     have hsq : SqLe x 1 y d := (nonnegg_neg_pos (c := d) (d := 1) (a := x) (b := y)).1 hnonnegg
     have hxy' : (x : ℝ) ≤ (y : ℝ) * Real.sqrt d := sqLe_x_le_y_sqrt hsq
     have : 0 ≤ (y : ℝ) * Real.sqrt d - x := sub_nonneg.mpr hxy'
-    simpa [toReal, sub_eq_add_neg, mul_assoc, mul_left_comm, mul_comm, add_assoc, add_left_comm,
-      add_comm] using this
+    simpa using this
 
 instance : Archimedean (ℤ√d) :=
   let h0 : (0 : ℤ) ≤ d := by exact_mod_cast Nat.zero_le d
@@ -109,7 +108,7 @@ instance : Archimedean (ℤ√d) :=
   have hmono : Monotone f := by
     intro a b hab
     have hba : 0 ≤ f (b - a) := toReal_nonneg_nat (d := d) (a := b - a) (sub_nonneg.mpr hab)
-    have : 0 ≤ f b - f a := by simpa [map_sub] using hba
+    have : 0 ≤ f b - f a := by simpa using hba
     exact sub_nonneg.mp this
   Archimedean.comap f.toAddMonoidHom (hmono.strictMono_of_injective (toReal_injective h0 hd))
 
