@@ -36,7 +36,7 @@ section
 
 variable {d : ℕ} [Nonsquare d]
 
-lemma sqLe_y_sqrt_le_x {x y d : ℕ} (h : SqLe y d x 1) :
+private lemma sqLe_y_sqrt_le_x {x y d : ℕ} (h : SqLe y d x 1) :
     (y : ℝ) * Real.sqrt d ≤ x := by
   have hy : (0 : ℝ) ≤ y := by exact_mod_cast Nat.zero_le y
   have hd : (0 : ℝ) ≤ d := by exact_mod_cast Nat.zero_le d
@@ -54,7 +54,7 @@ lemma sqLe_y_sqrt_le_x {x y d : ℕ} (h : SqLe y d x 1) :
   have hy' : (0 : ℝ) ≤ (y : ℝ) * Real.sqrt d := mul_nonneg hy (Real.sqrt_nonneg _)
   nlinarith [hsq, hx, hy']
 
-lemma sqLe_x_le_y_sqrt {x y d : ℕ} (h : SqLe x 1 y d) :
+private lemma sqLe_x_le_y_sqrt {x y d : ℕ} (h : SqLe x 1 y d) :
     (x : ℝ) ≤ (y : ℝ) * Real.sqrt d := by
   have hy : (0 : ℝ) ≤ y := by exact_mod_cast Nat.zero_le y
   have hd : (0 : ℝ) ≤ d := by exact_mod_cast Nat.zero_le d
@@ -74,7 +74,7 @@ lemma sqLe_x_le_y_sqrt {x y d : ℕ} (h : SqLe x 1 y d) :
   nlinarith [hsq, hx, hy']
 
 omit [Nonsquare d] in
-lemma toReal_nonneg_nat {a : ℤ√d} (ha : 0 ≤ a) :
+private lemma toReal_nonneg_nat {a : ℤ√d} (ha : 0 ≤ a) :
     0 ≤ toReal (d := (d : ℤ)) (by exact_mod_cast Nat.zero_le d) a := by
   have ha' := ha
   change Nonneg (a - 0) at ha'
