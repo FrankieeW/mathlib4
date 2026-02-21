@@ -684,6 +684,7 @@ instance preorder : Preorder (ℤ√d) where
   lt_iff_le_not_ge _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
 open Int in
+@[deprecated "Use `exists_nat_ge` in ToReal." (since := "2026-02-21")]
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
     match -a with
