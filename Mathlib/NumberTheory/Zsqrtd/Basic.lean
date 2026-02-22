@@ -898,73 +898,6 @@ instance : IsOrderedAddMonoid (ℤ√d) :=
 instance : IsStrictOrderedRing (ℤ√d) :=
   .of_mul_pos Zsqrtd.mul_pos
 
-theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n • b := by
-  obtain ⟨n, hn⟩ := Zsqrtd.le_arch a
-  have hb0 : (0 : ℤ√d) ≤ b := le_of_lt hb
-  have hbne : b ≠ 0 := ne_of_gt hb
-  have hnorm_ne : b.norm ≠ 0 := by
-    intro h0
-    have h0' : b.re * b.re - (d : ℤ) * b.im * b.im = 0 := by
-      simpa [norm_def] using h0
-    have hEq : b.re * b.re = (d : ℤ) * b.im * b.im := sub_eq_zero.mp h0'
-    have hz : b.re = 0 ∧ b.im = 0 :=
-      divides_sq_eq_zero_z (d := d) (x := b.re) (y := b.im) hEq
-    have : b = 0 := by
-      ext <;> simp [hz.1, hz.2]
-    exact hbne this
-  have h1_natAbs : (1 : ℕ) ≤ b.norm.natAbs :=
-    Nat.succ_le_iff.2 (Int.natAbs_pos.2 hnorm_ne)
-  have h1_natAbs' : (1 : ℤ√d) ≤ (b.norm.natAbs : ℤ√d) := by
-    exact_mod_cast h1_natAbs
-  obtain ⟨m1, hm1⟩ := Zsqrtd.le_arch (star b)
-  obtain ⟨m2, hm2⟩ := Zsqrtd.le_arch (-star b)
-  let m : ℕ := max m1 m2
-  have hm1' : star b ≤ (m : ℤ√d) := by
-    refine hm1.trans ?_
-    exact_mod_cast (by simpa [m] using Nat.le_max_left m1 m2)
-  have hm2' : -star b ≤ (m : ℤ√d) := by
-    refine hm2.trans ?_
-    exact_mod_cast (by simpa [m] using Nat.le_max_right m1 m2)
-  have hsb : star b * b = (b.norm : ℤ√d) := by
-    calc
-      star b * b = b * star b := by simp [mul_comm]
-      _ = (b.norm : ℤ√d) := (norm_eq_mul_conj b).symm
-  have hnorm_le : (b.norm : ℤ√d) ≤ (m : ℤ√d) * b := by
-    have hmul := mul_le_mul_of_nonneg_right hm1' hb0
-    simpa [hsb] using hmul
-  have hnegnorm_le : (-(b.norm : ℤ√d)) ≤ (m : ℤ√d) * b := by
-    have hmul := mul_le_mul_of_nonneg_right hm2' hb0
-    simpa [neg_mul, hsb] using hmul
-  have hnatAbs_le : (b.norm.natAbs : ℤ√d) ≤ (m : ℤ√d) * b := by
-    have habs_cast : (b.norm.natAbs : ℤ√d) = (|b.norm| : ℤ√d) := by
-      simpa using (Nat.cast_natAbs (α := ℤ√d) b.norm)
-    have habs_le : (|b.norm| : ℤ√d) ≤ (m : ℤ√d) * b := by
-      cases le_total 0 b.norm with
-      | inl h =>
-          have habs_int : |b.norm| = b.norm := abs_of_nonneg h
-          have habs : (|b.norm| : ℤ√d) = (b.norm : ℤ√d) := by
-            exact_mod_cast habs_int
-          simpa [habs] using hnorm_le
-      | inr h =>
-          have habs_int : |b.norm| = -b.norm := abs_of_nonpos h
-          have habs : (|b.norm| : ℤ√d) = (-(b.norm : ℤ√d)) := by
-            exact_mod_cast habs_int
-          simpa [habs] using hnegnorm_le
-    simpa [habs_cast] using habs_le
-  have hone_le_mul : (1 : ℤ√d) ≤ (m : ℤ√d) * b :=
-    h1_natAbs'.trans hnatAbs_le
-  have hone_le : (1 : ℤ√d) ≤ m • b := by
-    simpa [nsmul_eq_mul] using hone_le_mul
-  have hn_le : (n : ℤ√d) ≤ (n * m) • b := by
-    have h : n • (1 : ℤ√d) ≤ n • (m • b) := nsmul_le_nsmul_right hone_le n
-    calc
-      (n : ℤ√d) = n • (1 : ℤ√d) := by simp
-      _ ≤ n • (m • b) := h
-      _ = (n * m) • b := by simp [nsmul_eq_mul, mul_assoc, Nat.cast_mul]
-  exact ⟨n * m, hn.trans hn_le⟩
-
-instance : Archimedean (ℤ√d) where
-  arch := Zsqrtd.le_arch_smul
 end
 
 theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
@@ -1004,11 +937,11 @@ def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
         ring
       map_one' := by simp
       map_mul' := fun a b => by
-        have :
+        have hmul :
           (a.re + a.im * r : R) * (b.re + b.im * r) =
             a.re * b.re + (a.re * b.im + a.im * b.re) * r + a.im * b.im * (r * r) := by
           ring
-        simp only [re_mul, Int.cast_add, Int.cast_mul, im_mul, this, r.prop]
+        simp only [re_mul, Int.cast_add, Int.cast_mul, im_mul, hmul, r.prop]
         ring }
   invFun f := ⟨f sqrtd, by rw [← f.map_mul, dmuld, map_intCast]⟩
   left_inv r := by simp
