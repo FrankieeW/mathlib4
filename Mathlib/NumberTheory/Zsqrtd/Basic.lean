@@ -925,12 +925,7 @@ theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n • b :
     · simpa [norm_eq_mul_conj, mul_comm] using mul_le_mul_of_nonneg_right hstar_le.1 hb0
     · simpa [norm_eq_mul_conj, mul_comm] using mul_le_mul_of_nonneg_right hstar_le.2 hb0
   have hnatAbs_le : (b.norm.natAbs : ℤ√d) ≤ (m : ℤ√d) * b := by
-    have habs_cast : (b.norm.natAbs : ℤ√d) = |(b.norm : ℤ√d)| := by
-      calc
-        (b.norm.natAbs : ℤ√d) = ((|b.norm| : ℤ) : ℤ√d) := Nat.cast_natAbs (α := ℤ√d) b.norm
-        _ = |(b.norm : ℤ√d)| := Int.cast_abs (R := ℤ√d) (a := b.norm)
-    have habs_le : |(b.norm : ℤ√d)| ≤ (m : ℤ√d) * b := abs_le'.2 hnorm_le
-    simpa [habs_cast] using habs_le
+    simp [abs_le'.2 hnorm_le]
   have hone_le_mul : (1 : ℤ√d) ≤ (m : ℤ√d) * b :=
     h1_natAbs'.trans hnatAbs_le
   have hone_le : (1 : ℤ√d) ≤ m • b := by simpa [nsmul_eq_mul] using hone_le_mul
