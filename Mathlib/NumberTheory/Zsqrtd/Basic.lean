@@ -909,10 +909,8 @@ theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n • b :
     have : b = 0 := by
       ext <;> simp [divides_sq_eq_zero_z (d := d) (x := b.re) (y := b.im) hEq]
     exact ne_of_gt hb this
-  have h1_natAbs : (1 : ℕ) ≤ b.norm.natAbs :=
-    Nat.succ_le_iff.2 (Int.natAbs_pos.2 hnorm_ne)
   have h1_natAbs' : (1 : ℤ√d) ≤ (b.norm.natAbs : ℤ√d) := by
-    exact_mod_cast h1_natAbs
+    exact_mod_cast Nat.succ_le_iff.2 (Int.natAbs_pos.2 hnorm_ne)
   obtain ⟨m1, hm1⟩ := Zsqrtd.le_arch (star b)
   obtain ⟨m2, hm2⟩ := Zsqrtd.le_arch (-star b)
   let m : ℕ := max m1 m2
