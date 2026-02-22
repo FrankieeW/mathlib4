@@ -918,19 +918,18 @@ theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n • b :
   let m : ℕ := max m1 m2
   have hm_cast : (m1 : ℤ√d) ≤ (m : ℤ√d) ∧ (m2 : ℤ√d) ≤ (m : ℤ√d) := by
     constructor <;> exact_mod_cast (by simp [m])
-  have hm1' : star b ≤ (m : ℤ√d) := hm1.trans hm_cast.1
-  have hm2' : -star b ≤ (m : ℤ√d) := hm2.trans hm_cast.2
-  have hnorm_le : (b.norm : ℤ√d) ≤ (m : ℤ√d) * b := by
-    simpa [norm_eq_mul_conj, mul_comm] using mul_le_mul_of_nonneg_right hm1' hb0
-  have hnegnorm_le : (-(b.norm : ℤ√d)) ≤ (m : ℤ√d) * b := by
-    simpa [norm_eq_mul_conj, mul_comm] using mul_le_mul_of_nonneg_right hm2' hb0
+  have hstar_le : star b ≤ (m : ℤ√d) ∧ -star b ≤ (m : ℤ√d) :=
+    ⟨hm1.trans hm_cast.1, hm2.trans hm_cast.2⟩
+  have hnorm_le : (b.norm : ℤ√d) ≤ (m : ℤ√d) * b ∧ (-(b.norm : ℤ√d)) ≤ (m : ℤ√d) * b := by
+    constructor
+    · simpa [norm_eq_mul_conj, mul_comm] using mul_le_mul_of_nonneg_right hstar_le.1 hb0
+    · simpa [norm_eq_mul_conj, mul_comm] using mul_le_mul_of_nonneg_right hstar_le.2 hb0
   have hnatAbs_le : (b.norm.natAbs : ℤ√d) ≤ (m : ℤ√d) * b := by
     have habs_cast : (b.norm.natAbs : ℤ√d) = |(b.norm : ℤ√d)| := by
       calc
         (b.norm.natAbs : ℤ√d) = ((|b.norm| : ℤ) : ℤ√d) := Nat.cast_natAbs (α := ℤ√d) b.norm
         _ = |(b.norm : ℤ√d)| := Int.cast_abs (R := ℤ√d) (a := b.norm)
-    have habs_le : |(b.norm : ℤ√d)| ≤ (m : ℤ√d) * b :=
-      abs_le'.2 ⟨hnorm_le, hnegnorm_le⟩
+    have habs_le : |(b.norm : ℤ√d)| ≤ (m : ℤ√d) * b := abs_le'.2 hnorm_le
     simpa [habs_cast] using habs_le
   have hone_le_mul : (1 : ℤ√d) ≤ (m : ℤ√d) * b :=
     h1_natAbs'.trans hnatAbs_le
