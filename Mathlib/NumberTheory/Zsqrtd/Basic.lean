@@ -928,13 +928,13 @@ theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n • b :
     simp [abs_le'.2 hnorm_le]
   have hone_le_mul : (1 : ℤ√d) ≤ (m : ℤ√d) * b :=
     h1_natAbs'.trans hnatAbs_le
-  have hone_le : (1 : ℤ√d) ≤ m • b := by simpa [nsmul_eq_mul] using hone_le_mul
+  have hone_le : (1 : ℤ√d) ≤ m • b := by simp [nsmul_eq_mul, hone_le_mul]
   have hn_le : (n : ℤ√d) ≤ (n * m) • b := by
     have h : n • (1 : ℤ√d) ≤ n • (m • b) := nsmul_le_nsmul_right hone_le n
     calc
       (n : ℤ√d) = n • (1 : ℤ√d) := by simp
       _ ≤ n • (m • b) := h
-      _ = (n * m) • b := by simp [nsmul_eq_mul, mul_assoc, Nat.cast_mul]
+      _ = (n * m) • b := by simp [mul_assoc, Nat.cast_mul]
   exact ⟨n * m, hn.trans hn_le⟩
 
 instance : Archimedean (ℤ√d) where
