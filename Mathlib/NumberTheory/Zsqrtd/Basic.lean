@@ -937,11 +937,11 @@ def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
         ring
       map_one' := by simp
       map_mul' := fun a b => by
-        have hmul :
+        have :
           (a.re + a.im * r : R) * (b.re + b.im * r) =
             a.re * b.re + (a.re * b.im + a.im * b.re) * r + a.im * b.im * (r * r) := by
           ring
-        simp only [re_mul, Int.cast_add, Int.cast_mul, im_mul, hmul, r.prop]
+        simp only [re_mul, Int.cast_add, Int.cast_mul, im_mul, this, r.prop]
         ring }
   invFun f := ⟨f sqrtd, by rw [← f.map_mul, dmuld, map_intCast]⟩
   left_inv r := by simp
