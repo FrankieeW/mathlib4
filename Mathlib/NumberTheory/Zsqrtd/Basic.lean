@@ -921,10 +921,14 @@ theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n • b :
   let m : ℕ := max m1 m2
   have hm1' : star b ≤ (m : ℤ√d) := by
     refine hm1.trans ?_
-    exact_mod_cast (by simpa [m] using Nat.le_max_left m1 m2)
+    exact_mod_cast (by
+      dsimp [m]
+      exact Nat.le_max_left m1 m2)
   have hm2' : -star b ≤ (m : ℤ√d) := by
     refine hm2.trans ?_
-    exact_mod_cast (by simpa [m] using Nat.le_max_right m1 m2)
+    exact_mod_cast (by
+      dsimp [m]
+      exact Nat.le_max_right m1 m2)
   have hsb : star b * b = (b.norm : ℤ√d) := by
     calc
       star b * b = b * star b := by simp [mul_comm]
@@ -936,19 +940,21 @@ theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n • b :
     have hmul := mul_le_mul_of_nonneg_right hm2' hb0
     simpa [neg_mul, hsb] using hmul
   have hnatAbs_le : (b.norm.natAbs : ℤ√d) ≤ (m : ℤ√d) * b := by
-    have habs_cast : (b.norm.natAbs : ℤ√d) = (|b.norm| : ℤ√d) := by
-      simpa using (Nat.cast_natAbs (α := ℤ√d) b.norm)
-    have habs_le : (|b.norm| : ℤ√d) ≤ (m : ℤ√d) * b := by
+    have habs_cast : (b.norm.natAbs : ℤ√d) = |(b.norm : ℤ√d)| := by
+      calc
+        (b.norm.natAbs : ℤ√d) = ((|b.norm| : ℤ) : ℤ√d) := Nat.cast_natAbs (α := ℤ√d) b.norm
+        _ = |(b.norm : ℤ√d)| := Int.cast_abs (R := ℤ√d) (a := b.norm)
+    have habs_le : |(b.norm : ℤ√d)| ≤ (m : ℤ√d) * b := by
       cases le_total 0 b.norm with
       | inl h =>
-          have habs_int : |b.norm| = b.norm := abs_of_nonneg h
-          have habs : (|b.norm| : ℤ√d) = (b.norm : ℤ√d) := by
-            exact_mod_cast habs_int
+          have hcast : (0 : ℤ√d) ≤ (b.norm : ℤ√d) := by
+            exact_mod_cast h
+          have habs : |(b.norm : ℤ√d)| = (b.norm : ℤ√d) := abs_of_nonneg hcast
           simpa [habs] using hnorm_le
       | inr h =>
-          have habs_int : |b.norm| = -b.norm := abs_of_nonpos h
-          have habs : (|b.norm| : ℤ√d) = (-(b.norm : ℤ√d)) := by
-            exact_mod_cast habs_int
+          have hcast : (b.norm : ℤ√d) ≤ (0 : ℤ√d) := by
+            exact_mod_cast h
+          have habs : |(b.norm : ℤ√d)| = (-(b.norm : ℤ√d)) := abs_of_nonpos hcast
           simpa [habs] using hnegnorm_le
     simpa [habs_cast] using habs_le
   have hone_le_mul : (1 : ℤ√d) ≤ (m : ℤ√d) * b :=
