@@ -920,14 +920,10 @@ theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n • b :
     constructor <;> exact_mod_cast (by simp [m])
   have hm1' : star b ≤ (m : ℤ√d) := hm1.trans hm_cast.1
   have hm2' : -star b ≤ (m : ℤ√d) := hm2.trans hm_cast.2
-  have hsb : star b * b = (b.norm : ℤ√d) := by
-    simpa [mul_comm] using (norm_eq_mul_conj b).symm
   have hnorm_le : (b.norm : ℤ√d) ≤ (m : ℤ√d) * b := by
-    have hmul := mul_le_mul_of_nonneg_right hm1' hb0
-    simpa [hsb] using hmul
+    simpa [norm_eq_mul_conj, mul_comm] using mul_le_mul_of_nonneg_right hm1' hb0
   have hnegnorm_le : (-(b.norm : ℤ√d)) ≤ (m : ℤ√d) * b := by
-    have hmul := mul_le_mul_of_nonneg_right hm2' hb0
-    simpa [neg_mul, hsb] using hmul
+    simpa [norm_eq_mul_conj, mul_comm] using mul_le_mul_of_nonneg_right hm2' hb0
   have hnatAbs_le : (b.norm.natAbs : ℤ√d) ≤ (m : ℤ√d) * b := by
     have habs_cast : (b.norm.natAbs : ℤ√d) = |(b.norm : ℤ√d)| := by
       calc
