@@ -685,7 +685,26 @@ instance preorder : Preorder (ℤ√d) where
   lt_iff_le_not_ge _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
 open Int in
+@[deprecated _root_.exists_nat_ge (since := "2026-02-22")]
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
+  obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
+    match -a with
+    | ⟨Int.ofNat x, Int.ofNat y⟩ => ⟨0, 0, by trivial⟩
+    | ⟨Int.ofNat x, -[y+1]⟩ => ⟨0, y + 1, by simp [Int.negSucc_eq, add_assoc, Nonneg, Nonnegg]⟩
+    | ⟨-[x+1], Int.ofNat y⟩ => ⟨x + 1, 0, by simp [Int.negSucc_eq, add_assoc, Nonneg, Nonnegg]⟩
+    | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simp [Int.negSucc_eq, add_assoc, Nonneg, Nonnegg]⟩
+  refine ⟨x + d * y, h.trans ?_⟩
+  change Nonneg ⟨↑x + d * y - ↑x, 0 - ↑y⟩
+  rcases y with - | y
+  · simp only [Nat.cast_zero, mul_zero, add_zero, sub_self]
+    trivial
+  have h : ∀ y, SqLe y d (d * y) 1 := fun y => by
+    simpa [SqLe, mul_comm, mul_left_comm] using Nat.mul_le_mul_right (y * y) (Nat.le_mul_self d)
+  rw [show (x : ℤ) + d * Nat.succ y - x = d * Nat.succ y by simp]
+  exact h (y + 1)
+
+open Int in
+private theorem le_arch' (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
     match -a with
     | ⟨Int.ofNat x, Int.ofNat y⟩ => ⟨0, 0, by trivial⟩
@@ -898,8 +917,8 @@ instance : IsOrderedAddMonoid (ℤ√d) :=
 instance : IsStrictOrderedRing (ℤ√d) :=
   .of_mul_pos Zsqrtd.mul_pos
 
-theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n • b := by
-  obtain ⟨n, hn⟩ := Zsqrtd.le_arch a
+private theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n • b := by
+  obtain ⟨n, hn⟩ := le_arch' a
   have hb0 : (0 : ℤ√d) ≤ b := le_of_lt hb
   have hnorm_ne : b.norm ≠ 0 := by
     intro h0
@@ -911,8 +930,8 @@ theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n • b :
     exact ne_of_gt hb this
   have h1_natAbs' : (1 : ℤ√d) ≤ (b.norm.natAbs : ℤ√d) := by
     exact_mod_cast Nat.succ_le_iff.2 (Int.natAbs_pos.2 hnorm_ne)
-  obtain ⟨m1, hm1⟩ := Zsqrtd.le_arch (star b)
-  obtain ⟨m2, hm2⟩ := Zsqrtd.le_arch (-star b)
+  obtain ⟨m1, hm1⟩ := le_arch' (star b)
+  obtain ⟨m2, hm2⟩ := le_arch' (-star b)
   let m : ℕ := max m1 m2
   have hm_cast : (m1 : ℤ√d) ≤ (m : ℤ√d) ∧ (m2 : ℤ√d) ≤ (m : ℤ√d) := by
     constructor <;> exact_mod_cast (by simp [m])
