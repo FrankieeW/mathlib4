@@ -938,15 +938,11 @@ private theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n
 instance : Archimedean (ℤ√d) where
   arch := Zsqrtd.le_arch_smul
 
-
 @[deprecated _root_.exists_nat_ge (since := "2026-02-22")]
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n :=
-  _root_.exists_nat_ge  a
-
+  _root_.exists_nat_ge a
 
 end
-
-
 theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
   refine ⟨fun ha => Zsqrtd.ext_iff.mpr ?_, fun h => by rw [h, norm_zero]⟩
   dsimp only [norm] at ha
