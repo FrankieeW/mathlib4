@@ -903,11 +903,8 @@ private theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n
   have hb0 : (0 : ℤ√d) ≤ b := le_of_lt hb
   have hnorm_ne : b.norm ≠ 0 := by
     intro h0
-    have h0' : b.re * b.re - (d : ℤ) * b.im * b.im = 0 := by
-      simpa [norm_def] using h0
-    have hEq : b.re * b.re = (d : ℤ) * b.im * b.im := sub_eq_zero.mp h0'
     have : b = 0 := by
-      ext <;> simp [divides_sq_eq_zero_z (d := d) (x := b.re) (y := b.im) hEq]
+      ext <;> simp [divides_sq_eq_zero_z (d := d) (x := b.re) (y := b.im) (sub_eq_zero.mp h0)]
     exact ne_of_gt hb this
   have h1_natAbs' : (1 : ℤ√d) ≤ (b.norm.natAbs : ℤ√d) := by
     exact_mod_cast Nat.succ_le_iff.2 (Int.natAbs_pos.2 hnorm_ne)
