@@ -684,7 +684,6 @@ instance preorder : Preorder (ℤ√d) where
   le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using hab.add hbc
   lt_iff_le_not_ge _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
-
 open Int in
 private theorem le_arch' (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
@@ -943,6 +942,7 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n :=
   _root_.exists_nat_ge a
 
 end
+
 theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
   refine ⟨fun ha => Zsqrtd.ext_iff.mpr ?_, fun h => by rw [h, norm_zero]⟩
   dsimp only [norm] at ha
