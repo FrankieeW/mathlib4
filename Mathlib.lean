@@ -5586,7 +5586,6 @@ public import Mathlib.NumberTheory.PrimesCongruentOne
 public import Mathlib.NumberTheory.Primorial
 public import Mathlib.NumberTheory.PythagoreanTriples
 public import Mathlib.NumberTheory.QuadraticField.Basic
-public import Mathlib.NumberTheory.QuadraticField.Parameters
 public import Mathlib.NumberTheory.RamificationInertia.Basic
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.NumberTheory.RamificationInertia.HilbertTheory
